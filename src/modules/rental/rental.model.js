@@ -1,5 +1,11 @@
 const mongoose = require("mongoose");
 
+const returnEntrySchema = new mongoose.Schema({
+  returnDate: { type: Date, required: true },
+  quantity: { type: Number, required: true, min: 1 },
+  amount: { type: Number, required: true, min: 0 },
+});
+
 const rentalItemSchema = new mongoose.Schema({
   product: {
     type: mongoose.Schema.Types.ObjectId,
@@ -26,13 +32,21 @@ const rentalItemSchema = new mongoose.Schema({
     required: true,
     min: 0,
   },
-  lastCalculationDate: {
+  startDate: {
+    type: Date,
+    required: true,
+  },
+  originalStartDate: {
     type: Date,
     required: true,
   },
   totalAmount: {
     type: Number,
     default: 0,
+  },
+  returns: {
+    type: [returnEntrySchema],
+    default: [],
   },
 });
 
