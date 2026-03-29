@@ -491,7 +491,7 @@ calculatePeriod(March 20, April 11, 5, 3000) → March partial + April partial
 **Files:** src/modules/product/product.routes.js
 
 **Steps:**
-1. POST: name (required, string), totalQuantity (required, number, min 1), monthlyPrice (required, number, min 0)
+1. POST: name (required, string), totalQuantity (required, number, min 1), monthlyPrice (required, number, min 1)
 2. PUT: same fields but none required (partial updates allowed)
 
 **Expected Result:** Invalid product data → 400.

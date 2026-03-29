@@ -120,8 +120,43 @@ const partialReturn = async (rentalId, data) => {
   return rental;
 };
 
-// TODO: Implement close rental
-const close = async (rentalId, data) => {};
+const close = async (rentalId, data) => {
+  const { closeDate } = data;
+
+  const rental = await Rental.findById(rentalId);
+  if (!rental) {
+    throw new AppError("Rental not found", 404);
+  }
+
+  if (rental.status !== "ACTIVE") {
+    throw new AppError("Rental is not active", 400);
+  }
+
+  for (const item of rental.items) {
+    if (item.remainingQuantity > 0) {
+      const amount = calculatePeriod(item.startDate, closeDate, item.remainingQuantity, item.monthlyPrice);
+
+      item.totalAmount += amount;
+
+      const product = await Product.findById(item.product);
+      if (product) {
+        product.availableQuantity += item.remainingQuantity;
+        await product.save();
+      }
+
+      item.returnedQuantity += item.remainingQuantity;
+      item.remainingQuantity = 0;
+      item.startDate = new Date(closeDate);
+    }
+  }
+
+  rental.status = "COMPLETED";
+  rental.endDate = new Date(closeDate);
+  rental.totalAmount = rental.items.reduce((sum, i) => sum + i.totalAmount, 0);
+
+  await rental.save();
+  return rental;
+};
 
 module.exports = {
   create,
