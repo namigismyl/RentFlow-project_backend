@@ -158,10 +158,26 @@ const close = async (rentalId, data) => {
   return rental;
 };
 
+const getStats = async () => {
+  const totalRentals = await Rental.countDocuments();
+  const activeRentals = await Rental.countDocuments({ status: "ACTIVE" });
+  const completedRentals = await Rental.countDocuments({ status: "COMPLETED" });
+
+  const revenueResult = await Rental.aggregate([
+    { $match: { status: "COMPLETED" } },
+    { $group: { _id: null, totalRevenue: { $sum: "$totalAmount" } } },
+  ]);
+
+  const totalRevenue = revenueResult.length > 0 ? revenueResult[0].totalRevenue : 0;
+
+  return { totalRentals, activeRentals, completedRentals, totalRevenue };
+};
+
 module.exports = {
   create,
   getAll,
   getById,
   partialReturn,
   close,
+  getStats,
 };

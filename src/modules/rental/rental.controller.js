@@ -45,10 +45,20 @@ const close = async (req, res, next) => {
   }
 };
 
+const getStats = async (req, res, next) => {
+  try {
+    const result = await rentalService.getStats();
+    res.status(200).json({ success: true, data: result });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   create,
   getAll,
   getById,
   partialReturn,
   close,
+  getStats,
 };

@@ -17,6 +17,7 @@ router.post(
 );
 
 router.get("/", auth, rentalController.getAll);
+router.get("/stats", auth, rentalController.getStats);
 router.get("/:id", auth, validateId, rentalController.getById);
 
 router.patch(
